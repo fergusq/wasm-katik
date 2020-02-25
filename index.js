@@ -1,0 +1,1 @@
+import('./pkg').then(k => katik = k).catch(console.error);

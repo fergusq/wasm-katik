@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width">
+<title>Katik</title>
+<style>
+    header {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        margin: 1rem 0;
+    }
+    @media screen and (max-width: 749px) {
+        header {
+            flex-direction: column !important;
+        }
+    }
+    #title {
+        margin-top: 0;
+        margin-bottom: 0;
+    }
+    #rightheader {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+    }
+    #source {
+        margin-right: 1rem;
+    }
+    #searchtext {
+        width: calc(100% - 16px);
+    }
+</style>
+
+<header>
+    <h1 id=title>Klingon dictionary</h1>
+
+    <div id=rightheader>
+        <p id=source>
+            <span id="basedon">Based on the</span> <a href="http://klingonska.org/dict/">Klingon Pocket Dictionary</a> (CC BY-SA)
+        </p>
+        <select id=lang>
+            <option value=en selected>English</option>
+            <option value=sv>Svenska</option>
+        </select>
+    </div>
+</header>
+
+<div id=search>
+    <input id=searchtext type=text autocomplete=off>
+</div>
+
+<hr>
+
+<div id=results></div>
+
+<script>
+    searchtext.oninput = event => {
+        results.innerHTML = katik.get_completions(searchtext.value, lang.value)
+    }
+    lang.oninput = () => {
+        if (lang.value == "en") {
+            title.innerText = "Klingon dictionary"
+            basedon.innerText = "Based on the"
+        } else {
+            title.innerText = "Klingonsk ordbok"
+            basedon.innerText = "Bygger på"
+        }
+        results.innerHTML = katik.get_completions(searchtext.value, lang.value)
+    }
+</script>
