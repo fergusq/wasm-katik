@@ -3,7 +3,7 @@
 mod utils;
 
 extern crate klingon_utils;
-use klingon_utils::zrajm::{parse_dictionary, ZrajmDictionary};
+use klingon_utils::zrajm::ZrajmDictionary;
 use klingon_utils::morpho::completions;
 
 use wasm_bindgen::prelude::*;
@@ -29,7 +29,7 @@ extern {
 pub fn load_dictionary() {
     utils::set_panic_hook();
     DICT.with(|dict| {
-        let mut dictionary = parse_dictionary(
+        let mut dictionary = ZrajmDictionary::parse(
             String::from_utf8(include_bytes!("../dict.zdb").into_iter().cloned().collect()).unwrap().lines().map(|l| l.to_string())
         );
         dictionary.words.retain(|w| w.id != "UjQ");
