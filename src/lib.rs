@@ -3,7 +3,7 @@
 mod utils;
 
 extern crate klingon_utils;
-use klingon_utils::zrajm::ZrajmDictionary;
+use klingon_utils::zrajm::{ZrajmDictionary, ZrajmPOS};
 use klingon_utils::morpho::completions;
 
 use wasm_bindgen::prelude::*;
@@ -55,9 +55,10 @@ pub fn get_completions(text: String, lang: String) -> String {
                 result += format!("<b>{}:</b>", if lang == "sv" { "Analys" } else { "Analysis" }).as_str();
                 result += "<dl>";
                 for word in parse {
-                    result += format!("<dh>{}</dh>", escape_html(word.first().unwrap().tlh.clone())).as_str();
+                    result += format!("<dh><b>{}</b></dh>", escape_html(word.first().unwrap().tlh.clone())).as_str();
                     for homonym in word {
-                        result += format!("<dd>{}</dd>",
+                        result += format!("<dd>(<i>{}</i>) {}</dd>",
+                            if lang == "sv" { sv_pos(homonym.pos).to_string() } else { homonym.pos.to_string() },
                             escape_html(remove_quotes(if lang == "sv" { homonym.sv } else { homonym.en }.join(", ")))
                         ).as_str();
                     }
@@ -68,8 +69,9 @@ pub fn get_completions(text: String, lang: String) -> String {
             
             result += "<table>";
             for suggestion in compls.suggestions {
-                result += format!("<tr><td><b>{}</b></td><td>{}</td></tr>",
+                result += format!("<tr><td><b>{}</b></td><td>(<i>{}</i>) {}</td></tr>",
                     escape_html(suggestion.tlh),
+                    if lang == "sv" { sv_pos(suggestion.pos).to_string() } else { suggestion.pos.to_string() },
                     escape_html(remove_quotes(if lang == "sv" { suggestion.sv } else { suggestion.en }.join(", ")))
                 ).as_str();
             }
@@ -80,6 +82,37 @@ pub fn get_completions(text: String, lang: String) -> String {
         }
         
     })
+}
+
+fn sv_pos(pos: ZrajmPOS) -> &'static str {
+    match pos {
+        ZrajmPOS::Adverbial => "adverbial",
+        ZrajmPOS::Conjunction => "konjunktion",
+        ZrajmPOS::Exclamation => "interjektion",
+        ZrajmPOS::Name => "namn",
+        ZrajmPOS::Noun => "substantiv",
+        ZrajmPOS::NounSuffix1 => "substantivsuffix, typ 1",
+        ZrajmPOS::NounSuffix2 => "substantivsuffix, typ 2",
+        ZrajmPOS::NounSuffix3 => "substantivsuffix, typ 3",
+        ZrajmPOS::NounSuffix4 => "substantivsuffix, typ 4",
+        ZrajmPOS::NounSuffix5 => "substantivsuffix, typ 5",
+        ZrajmPOS::Numeral => "numeral",
+        ZrajmPOS::Pronoun => "pronomen",
+        ZrajmPOS::QuestionWord => "frågeord",
+        ZrajmPOS::Verb => "verb",
+        ZrajmPOS::VerbPrefix => "verbprefix",
+        ZrajmPOS::VerbSuffix1 => "verbsuffix, typ 1",
+        ZrajmPOS::VerbSuffix2 => "verbsuffix, typ 2",
+        ZrajmPOS::VerbSuffix3 => "verbsuffix, typ 3",
+        ZrajmPOS::VerbSuffix4 => "verbsuffix, typ 4",
+        ZrajmPOS::VerbSuffix5 => "verbsuffix, typ 5",
+        ZrajmPOS::VerbSuffix6 => "verbsuffix, typ 6",
+        ZrajmPOS::VerbSuffix7 => "verbsuffix, typ 7",
+        ZrajmPOS::VerbSuffix8 => "verbsuffix, typ 8",
+        ZrajmPOS::VerbSuffix9 => "verbsuffix, typ 9",
+        ZrajmPOS::VerbSuffixRover => "verbsuffix, äventyrare",
+        ZrajmPOS::Unknown => "okänt",
+    }
 }
 
 fn escape_html(text: String) -> String {
